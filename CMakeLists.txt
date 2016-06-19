@@ -6,4 +6,6 @@ set(CMAKE_CSS_STANDARD_REQUIRED 1)
 
 
 add_subdirectory(decomposer)
+add_subdirectory(libs)
+add_subdirectory(tests)
 

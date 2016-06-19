@@ -13,6 +13,8 @@ add_executable(decomposer
 
 target_link_libraries(decomposer
 
+	decomposer_lib
+
 	Qt5::Widgets
 	Qt5::Multimedia
 )
