@@ -34,26 +34,30 @@ void WaveformDisplay::paintEvent(QPaintEvent*)
 	if (buffer_)
 	{
 		painter.setPen(Qt::black);
+		painter.setRenderHint(QPainter::Antialiasing);
 
 		int h = height();
 		Sample mid = h*0.5;
-		int samples = buffer_->size();
-
-		int toPaint = qMin(samples, width());
 
 		QPointF last(0,0);
 
-		for(int i = 0; i < width(); i++)
+		auto samples = buffer_->getSampleCapacity();
+
+		for(int i = 0; i < samples; i++)
 		{
-			Sample y = mid;
-			if (i < samples)
+			double y = mid;
+			double x = i * width() / double(samples);
+			if (i < buffer_->size())
 			{
 				Sample s = (*buffer_)[i];
-				y = mid + mid*s;
+				y = mid + mid*s*0.9;
 			}
 
-			QPointF next(i, y);
-			painter.drawLine(last, next);
+			QPointF next(x, y);
+			if (i > 0 )
+			{
+				painter.drawLine(last, next);
+			}
 			last = next;
 		}
 	}

@@ -97,7 +97,6 @@ void AudioSource::stop()
 
 void AudioSource::onNewData(const char* data, qint64 size)
 {
-	qDebug() << "new data! " << size;
 	Q_ASSERT(buffer_);
 
 	qint64 samples = size / 2;
@@ -110,7 +109,7 @@ void AudioSource::onNewData(const char* data, qint64 size)
 	std::transform(first, first + samples, std::back_inserter(*buffer_),
 		[](qint16 sample)
 		{
-			return Sample(sample) / 0x10000;
+			return Sample(sample) / std::numeric_limits<qint16>::max();
 		});
 
 	emit newData(*buffer_);
