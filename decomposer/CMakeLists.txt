@@ -9,6 +9,7 @@ add_executable(decomposer
 	main.cc
 	main_window.cc main_window.hh main_window.ui
 	waveform_display.cc waveform_display.hh
+	audio_source.cc audio_source.hh
 )
 
 target_link_libraries(decomposer

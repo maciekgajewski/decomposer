@@ -11,10 +11,18 @@ WaveformDisplay::WaveformDisplay(QWidget *parent) :
 {
 }
 
-void WaveformDisplay::setData(const QByteArray& data)
+void WaveformDisplay::setDisplayDuration(unsigned rate, Duration d)
 {
-	data_ = data;
-	repaint();
+	buffer_ = std::make_unique<FixedSizeCircularBuffer>(rate, d);
+}
+
+void WaveformDisplay::addData(const AudioBuffer& data)
+{
+	if (buffer_)
+	{
+		buffer_->append(data);
+		repaint();
+	}
 }
 
 void WaveformDisplay::paintEvent(QPaintEvent*)
@@ -22,22 +30,32 @@ void WaveformDisplay::paintEvent(QPaintEvent*)
 	QPainter painter(this);
 
 	painter.fillRect(rect(), Qt::white);
-	painter.setPen(Qt::black);
 
-	int h = height();
-	int samples = data_.size() / 2; // asuming 16 bit samples
-
-	int toPaint = qMin(samples, width());
-
-	QPoint last(0,0);
-
-	for(int i = 0; i < toPaint; i++)
+	if (buffer_)
 	{
-		qint16 v = *reinterpret_cast<qint16*>(data_.data() + i*2);
-		double rescaled = double(v) / 0xffff * h * 0.5;
-		QPoint next(i, int(rescaled) + h/2);
-		painter.drawLine(last, next);
-		last = next;
+		painter.setPen(Qt::black);
+
+		int h = height();
+		Sample mid = h*0.5;
+		int samples = buffer_->size();
+
+		int toPaint = qMin(samples, width());
+
+		QPointF last(0,0);
+
+		for(int i = 0; i < width(); i++)
+		{
+			Sample y = mid;
+			if (i < samples)
+			{
+				Sample s = (*buffer_)[i];
+				y = mid + mid*s;
+			}
+
+			QPointF next(i, y);
+			painter.drawLine(last, next);
+			last = next;
+		}
 	}
 }
 

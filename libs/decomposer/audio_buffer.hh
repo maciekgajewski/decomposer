@@ -11,6 +11,9 @@ namespace Decomposer {
 class AudioBuffer
 {
 public:
+
+	using value_type = Sample;
+
 	AudioBuffer(unsigned rate);
 
 	std::size_t getSamples() const { return data_.size(); }
@@ -19,6 +22,15 @@ public:
 		std::int64_t us = data_.size() * 1000000 / rate_;
 		return std::chrono::microseconds(us);
 	}
+
+	unsigned getRate() const { return rate_; }
+
+	void clear() { data_.clear(); }
+	void reserve(std::size_t c) { data_.reserve(c); }
+	void push_back(Sample s) { data_.push_back(s); }
+
+	auto begin() const { return data_.begin(); }
+	auto end() const { return data_.end(); }
 
 private:
 
@@ -44,6 +56,7 @@ public:
 		data_.push_back(s);
 	}
 
+	void append(const AudioBuffer& buf);
 
 private:
 

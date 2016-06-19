@@ -18,4 +18,13 @@ void FixedSizeCircularBuffer::setLength(unsigned rate, Duration length)
 	setCapacity(rate, length);
 }
 
+void FixedSizeCircularBuffer::append(const AudioBuffer& buf)
+{
+	if (buf.getRate() != rate_)
+	{
+		throw std::runtime_error("Rate mismatch");
+	}
+	data_.insert(data_.end(), buf.begin(), buf.end());
+}
+
 }

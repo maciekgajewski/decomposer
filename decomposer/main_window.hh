@@ -1,14 +1,13 @@
 #pragma once
 #include <QMainWindow>
 
-class QAudioInput;
-class QBuffer;
-
 namespace Decomposer {
 
 namespace Ui {
 class MainWindow;
 }
+
+class AudioSource;
 
 class MainWindow : public QMainWindow
 {
@@ -21,13 +20,10 @@ public:
 private slots:
 
 	void on_recordButton_clicked();
-	void on_audioInputNotify();
 
 private:
-	Ui::MainWindow* ui_;
-	QAudioInput* input_ = nullptr;
-	QByteArray buffer_;
-	QBuffer* bufferIo_;
+	Ui::MainWindow* ui_ = nullptr;
+	AudioSource* source_ = nullptr;
 };
 
 

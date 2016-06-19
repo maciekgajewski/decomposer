@@ -1,5 +1,8 @@
 #pragma once
 
+#include <decomposer/types.hh>
+#include <decomposer/audio_buffer.hh>
+
 #include <QWidget>
 
 namespace Decomposer {
@@ -11,14 +14,17 @@ public:
 
 	explicit WaveformDisplay(QWidget *parent = nullptr);
 
-	void setData(const QByteArray& data);
+	void setDisplayDuration(unsigned rate, Duration d);
+
+public slots:
+
+	void addData(const AudioBuffer& data);
 
 private:
 
 	void paintEvent(QPaintEvent *event) override;
 
-	QByteArray data_;
-
+	std::unique_ptr<FixedSizeCircularBuffer> buffer_;
 };
 
 }

@@ -1,11 +1,13 @@
 #include "main_window.hh"
 #include "ui_main_window.h"
 
-#include <QAudioInput>
-#include <QBuffer>
+#include "audio_source.hh"
+
 #include <QDebug>
 
 namespace Decomposer {
+
+using namespace std::literals;
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -13,34 +15,12 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	ui_->setupUi(this);
 
-	QAudioFormat format;
-	format.setSampleRate(8000);
-	format.setChannelCount(1);
-	format.setSampleSize(16);
-	format.setCodec("audio/pcm");
-	format.setByteOrder(QAudioFormat::LittleEndian);
-	format.setSampleType(QAudioFormat::SignedInt);
+	source_ = new AudioSource(this);
+	source_->setRate(44100);
 
-	QAudioDeviceInfo info = QAudioDeviceInfo::defaultInputDevice();
-	if (!info.isFormatSupported(format))
-	{
-		qWarning() << "Default format not supported, trying to use the nearest.";
-		format = info.nearestFormat(format);
-		qDebug() << format;
-	}
-	else
-	{
-		qDebug() << "Format supported";
-	}
+	ui_->waveform->setDisplayDuration(44100, 10ms);
 
-	input_ = new QAudioInput(format);
-	input_->setNotifyInterval(10);
-	connect(input_, &QAudioInput::notify, this, &MainWindow::on_audioInputNotify);
-
-	buffer_.reserve(1024*10);
-	bufferIo_ = new QBuffer(&buffer_, this);
-	bufferIo_->open(QIODevice::WriteOnly);
-
+	connect(source_, &AudioSource::newData, ui_->waveform, &WaveformDisplay::addData);
 }
 
 MainWindow::~MainWindow()
@@ -51,16 +31,7 @@ MainWindow::~MainWindow()
 void MainWindow::on_recordButton_clicked()
 {
 	qDebug() << "Recording";
-	input_->start(bufferIo_);
-}
-
-void MainWindow::on_audioInputNotify()
-{
-	qDebug() << "Notify, buffer size=" << buffer_.size() << ", io pos=" << bufferIo_->pos();
-	//QByteArray copy = buffer_;
-	//bufferIo_->seek(0);
-
-	//ui_->waveform->setData(copy);
+	source_->play();
 }
 
 }
