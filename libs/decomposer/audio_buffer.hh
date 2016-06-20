@@ -47,6 +47,7 @@ public:
 	void setLength(unsigned rate, Duration length); // erases the current content, changes capacity and ratio
 	std::size_t getSampleCapacity() const { return data_.capacity(); }
 
+	unsigned getRate() const { return rate_; }
 	std::size_t size() const {return data_.size(); }
 
 	Sample operator[](std::size_t idx) const { return data_[idx]; }

@@ -28,6 +28,7 @@ private:
 	void paintSparse(QPainter& painter);
 
 	std::unique_ptr<FixedSizeCircularBuffer> buffer_;
+	size_t unpaintedSamples = 0;
 };
 
 }

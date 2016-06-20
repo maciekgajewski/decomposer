@@ -23,7 +23,12 @@ void WaveformDisplay::addData(const AudioBuffer& data)
 	if (buffer_)
 	{
 		buffer_->append(data);
-		repaint();
+		unpaintedSamples += data.getSamples();
+		if (double(unpaintedSamples) / buffer_->getRate() > 0.05)
+		{
+			repaint();
+			unpaintedSamples = 0;
+		}
 	}
 }
 
