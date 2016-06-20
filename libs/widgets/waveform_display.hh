@@ -24,6 +24,9 @@ private:
 
 	void paintEvent(QPaintEvent *event) override;
 
+	void paintDense(QPainter& painter);
+	void paintSparse(QPainter& painter);
+
 	std::unique_ptr<FixedSizeCircularBuffer> buffer_;
 };
 

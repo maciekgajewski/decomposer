@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1032</width>
-    <height>378</height>
+    <width>986</width>
+    <height>434</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -56,7 +56,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1032</width>
+     <width>986</width>
      <height>27</height>
     </rect>
    </property>
@@ -67,7 +67,7 @@
   <customwidget>
    <class>Decomposer::WaveformDisplay</class>
    <extends>QWidget</extends>
-   <header>waveform_display.hh</header>
+   <header>widgets/waveform_display.hh</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

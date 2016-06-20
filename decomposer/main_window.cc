@@ -18,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	source_ = new AudioSource(this);
 	source_->setRate(44100);
 
-	ui_->waveform->setDisplayDuration(44100, 1s);
+	ui_->waveform->setDisplayDuration(44100, 10s);
 
 	connect(source_, &AudioSource::newData, ui_->waveform, &WaveformDisplay::addData);
 }
