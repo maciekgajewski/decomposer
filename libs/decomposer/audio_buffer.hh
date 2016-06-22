@@ -61,6 +61,9 @@ public:
 
 	void append(const AudioBuffer& buf);
 
+	auto begin() const { return data_.begin(); }
+	auto end() const { return data_.end(); }
+
 private:
 
 	void setCapacity(unsigned rate, unsigned samples);
