@@ -44,7 +44,9 @@ class FixedSizeCircularBuffer
 public:
 
 	FixedSizeCircularBuffer(unsigned rate, Duration length);
+	FixedSizeCircularBuffer(unsigned rate, unsigned samples);
 	void setLength(unsigned rate, Duration length); // erases the current content, changes capacity and ratio
+	void setLength(unsigned rate, unsigned samples); // erases the current content, changes capacity and ratio
 	std::size_t getSampleCapacity() const { return data_.capacity(); }
 
 	unsigned getRate() const { return rate_; }
@@ -61,12 +63,7 @@ public:
 
 private:
 
-	void setCapacity(unsigned rate, Duration length)
-	{
-		rate_ = rate;
-		std::size_t sampleCapacity = length * rate / std::chrono::seconds(1);
-		data_.set_capacity(sampleCapacity);
-	}
+	void setCapacity(unsigned rate, unsigned samples);
 
 	unsigned rate_; // samples/s
 	boost::circular_buffer<Sample> data_;

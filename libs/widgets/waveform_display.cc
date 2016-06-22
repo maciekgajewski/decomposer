@@ -7,50 +7,87 @@
 namespace Decomposer {
 
 static const double HEIGHT_FACTOR = 0.9;
+static const QColor BACKGROUND_COLOR = QColor("#ffe6cc");
 
-WaveformDisplay::WaveformDisplay(QWidget *parent) :
-	QWidget(parent)
+WaveformDisplay::WaveformDisplay(QWidget *parent)
+	:	QWidget(parent)
+	,	buffer_(sampleRate_, samplesDisplayed_)
 {
-}
-
-void WaveformDisplay::setDisplayDuration(unsigned rate, Duration d)
-{
-	buffer_ = std::make_unique<FixedSizeCircularBuffer>(rate, d);
 }
 
 void WaveformDisplay::addData(const AudioBuffer& data)
 {
-	if (buffer_)
+	buffer_.append(data);
+	unpaintedSamples += data.getSamples();
+	if (double(unpaintedSamples) / buffer_.getRate() > 0.05)
 	{
-		buffer_->append(data);
-		unpaintedSamples += data.getSamples();
-		if (double(unpaintedSamples) / buffer_->getRate() > 0.05)
-		{
-			repaint();
-			unpaintedSamples = 0;
-		}
+		repaint();
+		unpaintedSamples = 0;
 	}
 }
+
+void WaveformDisplay::setSampleRate(int rate)
+{
+	sampleRate_ = rate;
+	buffer_.setLength(sampleRate_, samplesDisplayed_);
+
+	prepareBackground();
+}
+
+void WaveformDisplay::setSamplesDisplayed(int samples)
+{
+	samplesDisplayed_ = samples;
+	buffer_.setLength(sampleRate_, samplesDisplayed_);
+
+	prepareBackground();
+}
+
+void WaveformDisplay::prepareBackground()
+{
+	QSize sz = size();
+	background_ = QPixmap(sz);
+	background_.fill(BACKGROUND_COLOR );
+
+	QColor lineColor("#e64d00");
+	QPainter painter(&background_);
+
+	painter.setPen(lineColor);
+	int mid = sz.height() / 2;
+	painter.drawLine(0, mid, sz.width(), mid);
+
+	QFont font("Monospace", 8);
+	font.setStyleHint(QFont::TypeWriter);
+	font.setPointSize(8);
+
+	painter.setFont(font);
+
+	QFontMetrics metrics(font, this);
+	QString text = QString("%1 samples, %2 per second").arg(samplesDisplayed_).arg(sampleRate_);
+
+	painter.drawText(10, 10 + metrics.height(), text);
+}
+
 
 void WaveformDisplay::paintEvent(QPaintEvent*)
 {
 	QPainter painter(this);
+	painter.drawPixmap(0, 0, background_);
 
-	painter.fillRect(rect(), Qt::white);
+	double samplesPerPixel = double(buffer_.getSampleCapacity()) / width();
 
-	if (buffer_)
+	if (samplesPerPixel > 1)
 	{
-		double samplesPerPixel = double(buffer_->getSampleCapacity()) / width();
-
-		if (samplesPerPixel > 1)
-		{
-			paintDense(painter);
-		}
-		else
-		{
-			paintSparse(painter);
-		}
+		paintDense(painter);
 	}
+	else
+	{
+		paintSparse(painter);
+	}
+}
+
+void WaveformDisplay::resizeEvent(QResizeEvent*)
+{
+	prepareBackground();
 }
 
 void WaveformDisplay::paintDense(QPainter& painter)
@@ -60,30 +97,28 @@ void WaveformDisplay::paintDense(QPainter& painter)
 	int h = height();
 	int w = width();
 	Sample mid = h*0.5;
-	auto samples = buffer_->getSampleCapacity();
+	auto samples = buffer_.getSampleCapacity();
 
 	size_t firstSample = 0;
 	for(int x = 0; x < w; x++)
 	{
-		if (firstSample >= buffer_->size())
+		if (firstSample >= buffer_.size())
 		{
-			// draw straight line till the end
-			painter.drawLine(QPoint(x, mid), QPoint(w, mid));
 			break;
 		}
 
 		size_t lastSample = std::min(
 			size_t(std::floor(samples * (x+1)/double(w)))
-			, buffer_->size());
+			, buffer_.size());
 
 		if (lastSample > firstSample)
 		{
 			int sample = firstSample;
-			Sample min = (*buffer_)[sample];
-			Sample max = (*buffer_)[sample];
+			Sample min = buffer_[sample];
+			Sample max = buffer_[sample];
 			for(;sample < lastSample; sample++)
 			{
-				Sample s = (*buffer_)[sample];
+				Sample s = buffer_[sample];
 				if (s > max) max = s;
 				if (s < min) min = s;
 			}
@@ -107,15 +142,15 @@ void WaveformDisplay::paintSparse(QPainter& painter)
 
 	QPointF last(0,0);
 
-	auto samples = buffer_->getSampleCapacity();
+	auto samples = buffer_.getSampleCapacity();
 
 	for(int i = 0; i < samples; i++)
 	{
 		double y = mid;
 		double x = i * width() / double(samples);
-		if (i < buffer_->size())
+		if (i < buffer_.size())
 		{
-			Sample s = (*buffer_)[i];
+			Sample s = buffer_[i];
 			y = mid + mid*s*HEIGHT_FACTOR;
 		}
 
