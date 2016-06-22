@@ -22,10 +22,14 @@ public slots:
 	// props
 
 	void setSampleRate(int rate);
-	void setSamplesDisplayed(int samples);
+	void setSamples(int samples);
+
+public:
+
+	// props
 
 	int sampleRate() const { return sampleRate_; }
-	int samplesDisplayed() const { return samplesDisplayed_; }
+	int samples() const { return samples_; }
 
 	// QWidget
 
@@ -45,7 +49,7 @@ private:
 	QPixmap background_;
 
 	// config
-	int samplesDisplayed_ = 2048;
+	int samples_ = 2048;
 	int sampleRate_ = 44100;
 };
 

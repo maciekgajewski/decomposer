@@ -25,6 +25,19 @@
        </widget>
       </item>
       <item>
+       <widget class="QSpinBox" name="samplesSpinBox">
+        <property name="minimum">
+         <number>500</number>
+        </property>
+        <property name="maximum">
+         <number>440000</number>
+        </property>
+        <property name="singleStep">
+         <number>500</number>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -69,8 +82,28 @@
    <extends>QWidget</extends>
    <header>widgets/waveform_display.hh</header>
    <container>1</container>
+   <slots>
+    <slot>setSamples(int)</slot>
+   </slots>
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>samplesSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>waveform</receiver>
+   <slot>setSamples(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>125</x>
+     <y>45</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>178</x>
+     <y>122</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

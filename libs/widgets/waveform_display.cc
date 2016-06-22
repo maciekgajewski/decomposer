@@ -11,7 +11,7 @@ static const QColor BACKGROUND_COLOR = QColor("#ffe6cc");
 
 WaveformDisplay::WaveformDisplay(QWidget *parent)
 	:	QWidget(parent)
-	,	buffer_(sampleRate_, samplesDisplayed_)
+	,	buffer_(sampleRate_, samples_)
 {
 }
 
@@ -28,18 +28,26 @@ void WaveformDisplay::addData(const AudioBuffer& data)
 
 void WaveformDisplay::setSampleRate(int rate)
 {
-	sampleRate_ = rate;
-	buffer_.setLength(sampleRate_, samplesDisplayed_);
+	if (rate != sampleRate_)
+	{
+		sampleRate_ = rate;
+		buffer_.setLength(sampleRate_, samples_);
 
-	prepareBackground();
+		prepareBackground();
+		repaint();
+	}
 }
 
-void WaveformDisplay::setSamplesDisplayed(int samples)
+void WaveformDisplay::setSamples(int samples)
 {
-	samplesDisplayed_ = samples;
-	buffer_.setLength(sampleRate_, samplesDisplayed_);
+	if (samples != samples_)
+	{
+		samples_ = samples;
+		buffer_.setLength(sampleRate_, samples_);
 
-	prepareBackground();
+		prepareBackground();
+		repaint();
+	}
 }
 
 void WaveformDisplay::prepareBackground()
@@ -62,7 +70,7 @@ void WaveformDisplay::prepareBackground()
 	painter.setFont(font);
 
 	QFontMetrics metrics(font, this);
-	QString text = QString("%1 samples, %2 per second").arg(samplesDisplayed_).arg(sampleRate_);
+	QString text = QString("%1 samples, %2 per second").arg(samples_).arg(sampleRate_);
 
 	painter.drawText(10, 10 + metrics.height(), text);
 }
