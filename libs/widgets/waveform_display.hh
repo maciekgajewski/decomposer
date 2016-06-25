@@ -40,7 +40,6 @@ private:
 	void paintEvent(QPaintEvent*) override;
 	void resizeEvent(QResizeEvent*) override;
 
-	void paintDense(QPainter& painter, size_t firstSample, size_t lastSample);
 	void paintSparse(QPainter& painter, size_t firstSample, size_t lastSample);
 	void prepareBackground();
 
