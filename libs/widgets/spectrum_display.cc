@@ -113,11 +113,6 @@ void SpectrumDisplay::calculate()
 
 	p_->window->compute();
 	p_->spectrum->compute();
-
-	qDebug() << "Spectrum size=" << p_->output.size();
-	auto max = *std::max_element(p_->output.begin(), p_->output.end());
-	auto min = *std::min_element(p_->output.begin(), p_->output.end());
-	qDebug() << "range=" << min << ", " << max;
 }
 
 

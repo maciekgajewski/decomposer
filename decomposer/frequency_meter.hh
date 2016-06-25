@@ -4,6 +4,8 @@
 
 #include <QObject>
 
+#include <memory>
+
 namespace Decomposer {
 
 class FrequencyMeter : public QObject
@@ -11,6 +13,7 @@ class FrequencyMeter : public QObject
 	Q_OBJECT
 public:
 	explicit FrequencyMeter(QObject *parent = nullptr);
+	~FrequencyMeter();
 
 signals:
 
@@ -19,9 +22,8 @@ signals:
 
 public slots:
 
-	void setWindowWidth(int width);
+	void setWindowSize(int width);
 	void setSamplingRate(int rate);
-	void setMinAmplitude(double ma);
 
 public slots:
 
@@ -29,18 +31,21 @@ public slots:
 
 private:
 
-	void tryMeasureFreqency();
+	struct Private;
 
+	void setupAlgo();
+	void tryMeasureFreqency();
 
 	FixedSizeCircularBuffer buffer_;
 
 	// props
 
-	int windowWidth_ = 2048;
+	int windowSize_ = 2048;
 	int samplingRate_ = 44100;
 
-	double minAmplitude_ = 0.5;
 	bool lost_ = true;
+
+	std::unique_ptr<Private> p_;
 };
 
 }

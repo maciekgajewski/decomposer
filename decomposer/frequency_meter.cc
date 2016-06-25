@@ -1,19 +1,36 @@
 #include "frequency_meter.hh"
 
+#include <essentia/algorithm.h>
+#include <essentia/algorithmfactory.h>
+
 #include <QDebug>
 
 namespace Decomposer {
 
+struct FrequencyMeter::Private
+{
+	std::vector<essentia::Real> input;
+	essentia::Real frequency, confidence;
+	std::unique_ptr<essentia::standard::Algorithm> pitchAlgo;
+};
+
 FrequencyMeter::FrequencyMeter(QObject *parent) :
-	QObject(parent), buffer_(samplingRate_, windowWidth_)
+	QObject(parent), buffer_(samplingRate_, windowSize_)
+{
+	p_ = std::make_unique<Private>();
+	void setupAlgo();
+}
+
+FrequencyMeter::~FrequencyMeter()
 {
 }
 
-void FrequencyMeter::setWindowWidth(int width)
+void FrequencyMeter::setWindowSize(int width)
 {
-	if (width != windowWidth_)
+	if (width != windowSize_)
 	{
-		buffer_.setLength(samplingRate_, windowWidth_);
+		buffer_.setLength(samplingRate_, windowSize_);
+		setupAlgo();
 	}
 }
 
@@ -21,15 +38,10 @@ void FrequencyMeter::setSamplingRate(int rate)
 {
 	if (rate != samplingRate_)
 	{
-		buffer_.setLength(samplingRate_, windowWidth_);
+		buffer_.setLength(samplingRate_, windowSize_);
+		setupAlgo();
 	}
 }
-
-void FrequencyMeter::setMinAmplitude(double ma)
-{
-	minAmplitude_ = ma;
-}
-
 
 void FrequencyMeter::addData(const AudioBuffer& data)
 {
@@ -38,52 +50,46 @@ void FrequencyMeter::addData(const AudioBuffer& data)
 	tryMeasureFreqency();
 }
 
+void FrequencyMeter::setupAlgo()
+{
+	p_->input.resize(windowSize_);
+
+	essentia::standard::AlgorithmFactory& factory = essentia::standard::AlgorithmFactory::instance();
+	p_->pitchAlgo.reset(factory.create(
+		"PitchYin",
+		"frameSize", windowSize_,
+		"sampleRate", samplingRate_
+		));
+
+	p_->pitchAlgo->input("signal").set(p_->input);
+
+	p_->pitchAlgo->output("pitch").set(p_->frequency);
+	p_->pitchAlgo->output("pitchConfidence").set(p_->confidence);
+}
+
 void FrequencyMeter::tryMeasureFreqency()
 {
 	 // only measure if buffer is full
 	if (buffer_.size() == buffer_.getSampleCapacity())
 	{
-		unsigned zeroPasses = 0;
-		Sample periodMax = 0.0;
-		Sample previousSample = buffer_[0];
+		p_->input.resize(buffer_.size());
+		std::copy(buffer_.begin(), buffer_.end(), p_->input.begin());
+		p_->pitchAlgo->compute();
 
-		for(unsigned i = 1; i < buffer_.size(); i++)
+		if (p_->confidence > 0.99)
 		{
-			Sample s = buffer_[i];
-
-			// detect 0 pass
-			if (s > 0)
+			emit frequencyDetected(p_->frequency);
+			lost_ = false;
+		}
+		else
+		{
+			if (!lost_)
 			{
-				if (previousSample <= 0.0)
-				{
-					if (zeroPasses > 0)
-					{
-						// verify the max of the previous period
-						// if it's too low, reject the value
-						if (periodMax < minAmplitude_)
-						{
-							if (!lost_)
-							{
-								lost_ = true;
-								emit frequencyLost();
-							}
-							return ;
-						}
-					}
-					periodMax = 0.0;
-					zeroPasses ++;
-				}
-				if (s > periodMax)
-					periodMax = s;
+				lost_ = true;
+				emit frequencyLost();
 			}
-			previousSample = s;
 		}
 
-		double windowInSeconds = double(windowWidth_) / samplingRate_;
-		double hz = double(zeroPasses) / windowInSeconds;
-
-		lost_ = false;
-		emit frequencyDetected(hz);
 	}
 }
 

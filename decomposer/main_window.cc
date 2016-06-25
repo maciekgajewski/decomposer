@@ -29,7 +29,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	FrequencyMeter* fm = new FrequencyMeter(this);
 	fm->setSamplingRate(44100);
-	fm->setWindowWidth(4096);
+	fm->setWindowSize(4096);
 
 	connect(source_, &AudioSource::newData, fm, &FrequencyMeter::addData);
 	connect(ui_->minAmplitudeSpin, SIGNAL(valueChanged(double)), fm, SLOT(setMinAmplitude(double)));
