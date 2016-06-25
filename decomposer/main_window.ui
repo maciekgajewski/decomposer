@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1138</width>
-    <height>543</height>
+    <width>1056</width>
+    <height>651</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -124,6 +124,22 @@
       </item>
      </layout>
     </item>
+    <item>
+     <widget class="Decomposer::SpectrumDisplay" name="spectrum" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>4</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>200</width>
+        <height>100</height>
+       </size>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -131,7 +147,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1138</width>
+     <width>1056</width>
      <height>27</height>
     </rect>
    </property>
@@ -147,6 +163,12 @@
    <slots>
     <slot>setSamples(int)</slot>
    </slots>
+  </customwidget>
+  <customwidget>
+   <class>Decomposer::SpectrumDisplay</class>
+   <extends>QWidget</extends>
+   <header>widgets/spectrum_display.hh</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>
