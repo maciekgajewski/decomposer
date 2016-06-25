@@ -15,8 +15,10 @@ static QColor BACKGROUND_COLOR("#33ffd6");
 struct SpectrumDisplay::Private
 {
 	std::vector<essentia::Real> input;
+	std::vector<essentia::Real> windowed;
 	std::vector<essentia::Real> output;
 	std::unique_ptr<essentia::standard::Algorithm> spectrum;
+	std::unique_ptr<essentia::standard::Algorithm> window;
 };
 
 SpectrumDisplay::SpectrumDisplay(QWidget* p)
@@ -27,9 +29,17 @@ SpectrumDisplay::SpectrumDisplay(QWidget* p)
 	p_->input.resize(windowSize_);
 
 	essentia::standard::AlgorithmFactory& factory = essentia::standard::AlgorithmFactory::instance();
-	p_->spectrum.reset(factory.create("Spectrum", "size", 4096));
+	p_->spectrum.reset(factory.create(
+		"Spectrum",
+		"size", 4096));
+	p_->window.reset(factory.create(
+		"Windowing",
+		"type", "blackmanharris62"));
 
-	p_->spectrum->input("frame").set(p_->input);
+	p_->window->input("frame").set(p_->input);
+	p_->window->output("frame").set(p_->windowed);
+
+	p_->spectrum->input("frame").set(p_->windowed);
 	p_->spectrum->output("spectrum").set(p_->output);
 }
 
@@ -84,7 +94,7 @@ void SpectrumDisplay::paintEvent(QPaintEvent*)
 	{
 		float v = p_->output[i];
 		double x = double(width()) * i / p_->output.size();
-		double y = 2 * h * v / windowSize_;
+		double y = v * h;
 
 		// zoom
 		y *= yZoom;
@@ -101,6 +111,7 @@ void SpectrumDisplay::calculate()
 	p_->input.resize(windowSize_);
 	std::copy(buffer_.begin(), buffer_.end(), p_->input.begin());
 
+	p_->window->compute();
 	p_->spectrum->compute();
 
 	qDebug() << "Spectrum size=" << p_->output.size();
