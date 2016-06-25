@@ -51,6 +51,7 @@ public:
 
 	unsigned getRate() const { return rate_; }
 	std::size_t size() const {return data_.size(); }
+	bool empty() const { return data_.empty(); }
 
 	Sample operator[](std::size_t idx) const { return data_[idx]; }
 

@@ -40,9 +40,12 @@ private:
 	void paintEvent(QPaintEvent*) override;
 	void resizeEvent(QResizeEvent*) override;
 
-	void paintDense(QPainter& painter);
-	void paintSparse(QPainter& painter);
+	void paintDense(QPainter& painter, size_t firstSample, size_t lastSample);
+	void paintSparse(QPainter& painter, size_t firstSample, size_t lastSample);
 	void prepareBackground();
+
+	size_t bufferSamples() const;
+	size_t findStartSample() const;
 
 	FixedSizeCircularBuffer buffer_;
 	size_t unpaintedSamples = 0;
