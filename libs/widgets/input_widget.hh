@@ -1,5 +1,7 @@
 #pragma once
 
+#include <decomposer/audio_buffer.hh>
+
 #include <QWidget>
 #include <QtUiPlugin/QDesignerExportWidget>
 
@@ -16,6 +18,10 @@ class QDESIGNER_WIDGET_EXPORT InputWidget : public QWidget
 public:
 	explicit InputWidget(QWidget *parent = 0);
 	~InputWidget();
+
+signals:
+
+	void newData(const AudioBuffer& data);
 
 private:
 	Ui::InputWidget *ui;
