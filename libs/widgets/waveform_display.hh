@@ -48,13 +48,13 @@ private:
 	size_t bufferSamples() const;
 	size_t findStartSample() const;
 
+	int samples_;
+	int sampleRate_;
+
 	FixedSizeCircularBuffer buffer_;
 	size_t unpaintedSamples = 0;
 	QPixmap background_;
 
-	// config
-	int samples_ = 2048;
-	int sampleRate_ = 44100;
 };
 
 }

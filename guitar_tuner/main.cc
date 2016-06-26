@@ -1,3 +1,5 @@
+#include "guitar_tuner_window.hh"
+
 #include <essentia/algorithmfactory.h>
 
 #include <QApplication>
@@ -8,7 +10,8 @@ int main(int argc, char** argv)
 
 	QApplication app(argc, argv);
 
-	// TODO show window here
+	Decomposer::GuitarTunerWindow window;
+	window.show();
 
 	return app.exec();
 	essentia::shutdown();

@@ -11,6 +11,7 @@ static const QColor BACKGROUND_COLOR = QColor("#ffe6cc");
 
 WaveformDisplay::WaveformDisplay(QWidget *parent)
 	:	QWidget(parent)
+	,	samples_(2048), sampleRate_(44100)
 	,	buffer_(sampleRate_, bufferSamples())
 {
 }

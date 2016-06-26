@@ -1,8 +1,8 @@
 #include "main_window.hh"
 #include "ui_main_window.h"
-
-#include "audio_source.hh"
 #include "frequency_meter.hh"
+
+#include <widgets/audio_source.hh>
 
 #include <essentia/algorithmfactory.h>
 

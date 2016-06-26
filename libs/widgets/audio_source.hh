@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include <QAudioDeviceInfo>
 
 #include <memory>
 
@@ -21,6 +22,7 @@ public:
 	~AudioSource();
 
 	void setRate(unsigned rate);
+	void setDevice(const QAudioDeviceInfo& info);
 
 public slots:
 
@@ -37,6 +39,10 @@ private slots:
 
 private:
 
+	void createInput();
+
+	int rate_ = 44100;
+	QAudioDeviceInfo deviceInfo_ = QAudioDeviceInfo::defaultInputDevice();
 	std::unique_ptr<AudioBuffer> buffer_;
 	QAudioInput* input_ = nullptr;
 	QIODevice* reader_ = nullptr;

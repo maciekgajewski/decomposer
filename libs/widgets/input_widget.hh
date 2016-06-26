@@ -11,6 +11,8 @@ namespace Ui {
 class InputWidget;
 }
 
+class AudioSource;
+
 class QDESIGNER_WIDGET_EXPORT InputWidget : public QWidget
 {
 	Q_OBJECT
@@ -23,8 +25,16 @@ signals:
 
 	void newData(const AudioBuffer& data);
 
+private slots:
+
+	void on_playButton_clicked();
+	void on_stopButton_clicked();
+
 private:
-	Ui::InputWidget *ui;
+
+	Ui::InputWidget* ui_;
+	AudioSource* audioSource_ = nullptr;
+
 };
 
 

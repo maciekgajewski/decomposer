@@ -46,6 +46,8 @@ AudioSource::AudioSource(QObject* p)
 	DataReader* reader = new DataReader(this);
 	connect(reader, SIGNAL(newData(const char*,qint64)), this, SLOT(onNewData(const char*,qint64)));
 	reader_ = reader;
+
+	createInput();
 }
 
 AudioSource::~AudioSource()
@@ -54,10 +56,19 @@ AudioSource::~AudioSource()
 
 void AudioSource::setRate(unsigned rate)
 {
-	buffer_ = std::make_unique<AudioBuffer>(rate);
+	if (rate != rate_)
+	{
+		rate_ = rate;
+		createInput();
+	}
+}
+
+void AudioSource::createInput()
+{
+	buffer_ = std::make_unique<AudioBuffer>(rate_);
 
 	QAudioFormat format;
-	format.setSampleRate(rate);
+	format.setSampleRate(rate_);
 	format.setChannelCount(1);
 	format.setSampleSize(16);
 	format.setCodec("audio/pcm");
@@ -80,12 +91,22 @@ void AudioSource::setRate(unsigned rate)
 	input_ = new QAudioInput(format, this);
 }
 
+void AudioSource::setDevice(const QAudioDeviceInfo& info)
+{
+	if (info != deviceInfo_)
+	{
+		if (input_->state() != QAudio::StoppedState)
+		{
+			throw std::runtime_error("cant change device while playing");
+		}
+		deviceInfo_ = info;
+		createInput();
+	}
+}
+
 void AudioSource::play()
 {
-	if (!input_)
-	{
-		throw std::runtime_error("Rate not set");
-	}
+	Q_ASSERT(input_);
 	input_->start(reader_);
 }
 
