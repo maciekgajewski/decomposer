@@ -4,6 +4,8 @@ include_directories(${Boost_INCLUDE_DIRS})
 
 add_executable(tests
 	buffer_tests.cc
+	tone_tests.cc
+
 	main.cc
 )
 

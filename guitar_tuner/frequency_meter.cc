@@ -72,7 +72,6 @@ void FrequencyMeter::setupAlgo()
 		"sampleRate", samplingRate_
 		));
 
-
 	p_->lowPass->input("signal").set(p_->input);
 	p_->lowPass->output("signal").set(p_->filtered);
 
@@ -107,6 +106,7 @@ void FrequencyMeter::tryMeasureFreqency()
 		{
 			emit frequencyDetected(p_->frequency);
 			lost_ = false;
+			qDebug() << "freq: "<< p_->frequency << " Hz";
 		}
 		else
 		{
@@ -114,6 +114,7 @@ void FrequencyMeter::tryMeasureFreqency()
 			{
 				lost_ = true;
 				emit frequencyLost();
+				qDebug() << "Lost";
 			}
 		}
 	}
