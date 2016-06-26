@@ -77,8 +77,8 @@ Tone findClosestTone(double freq)
 	Tone result;
 	result.frequency = candidate;
 	result.name = TONE_NAMES[name_index];
-
 	result.octave = 4 + octave;
+	result.index = diff;
 
 	return result;
 }

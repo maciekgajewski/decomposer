@@ -12,6 +12,7 @@ BOOST_AUTO_TEST_CASE(ExactA)
 
 	BOOST_CHECK_EQUAL(t.name, "A");
 	BOOST_CHECK_EQUAL(t.octave, 4);
+	BOOST_CHECK_EQUAL(t.index, 0);
 	BOOST_CHECK_CLOSE(t.frequency, 440.0, 0.01);
 }
 
@@ -21,6 +22,7 @@ BOOST_AUTO_TEST_CASE(AHash4)
 
 	BOOST_CHECK_EQUAL(t.name, "A#");
 	BOOST_CHECK_EQUAL(t.octave, 4);
+	BOOST_CHECK_EQUAL(t.index, 1);
 	BOOST_CHECK_CLOSE(t.frequency, 466.16, 0.01);
 }
 
@@ -30,6 +32,7 @@ BOOST_AUTO_TEST_CASE(GHash4)
 
 	BOOST_CHECK_EQUAL(t.name, "G#");
 	BOOST_CHECK_EQUAL(t.octave, 4);
+	BOOST_CHECK_EQUAL(t.index, -1);
 	BOOST_CHECK_CLOSE(t.frequency, 415.30, 0.01);
 }
 
@@ -39,6 +42,7 @@ BOOST_AUTO_TEST_CASE(A1)
 
 	BOOST_CHECK_EQUAL(t.name, "A");
 	BOOST_CHECK_EQUAL(t.octave, 1);
+	BOOST_CHECK_EQUAL(t.index, -36);
 	BOOST_CHECK_CLOSE(t.frequency, 55.0, 0.01);
 }
 
