@@ -10,7 +10,10 @@ namespace Decomposer {
 struct FrequencyMeter::Private
 {
 	std::vector<essentia::Real> input;
+	std::vector<essentia::Real> filtered;
 	essentia::Real frequency, confidence;
+
+	std::unique_ptr<essentia::standard::Algorithm> lowPass;
 	std::unique_ptr<essentia::standard::Algorithm> pitchAlgo;
 };
 
@@ -61,7 +64,17 @@ void FrequencyMeter::setupAlgo()
 		"sampleRate", samplingRate_
 		));
 
-	p_->pitchAlgo->input("signal").set(p_->input);
+	p_->lowPass.reset(factory.create(
+		"LowPass",
+		"cutoffFrequency", 1320, // 4x the highest string freq
+		"sampleRate", samplingRate_
+		));
+
+
+	p_->lowPass->input("signal").set(p_->input);
+	p_->lowPass->output("signal").set(p_->filtered);
+
+	p_->pitchAlgo->input("signal").set(p_->filtered);
 
 	p_->pitchAlgo->output("pitch").set(p_->frequency);
 	p_->pitchAlgo->output("pitchConfidence").set(p_->confidence);
@@ -74,9 +87,17 @@ void FrequencyMeter::tryMeasureFreqency()
 	{
 		p_->input.resize(buffer_.size());
 		std::copy(buffer_.begin(), buffer_.end(), p_->input.begin());
+
+		p_->lowPass->compute();
 		p_->pitchAlgo->compute();
 
-		if (p_->confidence > 0.99)
+		float threshold = 0.99;
+		if (p_->frequency > 200)
+			threshold = 0.95;
+		if (p_->frequency > 300)
+			threshold = 0.90;
+
+		if (p_->confidence > threshold)
 		{
 			emit frequencyDetected(p_->frequency);
 			lost_ = false;
@@ -89,7 +110,7 @@ void FrequencyMeter::tryMeasureFreqency()
 				emit frequencyLost();
 			}
 		}
-
+		//qDebug() << "freq: " << p_->frequency << ",conf: " << p_->confidence;
 	}
 }
 
