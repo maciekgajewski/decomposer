@@ -16,6 +16,13 @@ public:
 
 	AudioBuffer(unsigned rate);
 
+	template<typename FwdIt>
+	AudioBuffer(unsigned rate, FwdIt first, FwdIt last)
+		: rate_(rate)
+		, data_(first, last)
+	{
+	}
+
 	std::size_t getSamples() const { return data_.size(); }
 	Duration getDuration()
 	{

@@ -1,6 +1,7 @@
 add_executable(guitar_tuner
 	main.cc
 	guitar_tuner_window.cc  guitar_tuner_window.hh  guitar_tuner_window.ui
+	frequency_meter.cc frequency_meter.hh
 )
 
 target_link_libraries(guitar_tuner
