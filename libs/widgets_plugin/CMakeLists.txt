@@ -5,6 +5,8 @@ add_library(decomposer_widgets_plugin SHARED
 target_link_libraries(decomposer_widgets_plugin
 
 	decomposer_widgets
+
+	${ESSENTIA_Libraries}
 )
 
 set_target_properties(decomposer_widgets_plugin

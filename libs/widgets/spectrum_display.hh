@@ -13,6 +13,8 @@ namespace Decomposer {
 class QDESIGNER_WIDGET_EXPORT SpectrumDisplay : public QWidget
 {
 	Q_OBJECT
+	Q_PROPERTY(int sampleRate READ sampleRate WRITE setSampleRate)
+	Q_PROPERTY(int windowSize READ windowSize WRITE setWindowSize)
 public:
 
 	explicit SpectrumDisplay(QWidget *p = nullptr);

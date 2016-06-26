@@ -11,6 +11,8 @@ namespace Decomposer {
 class QDESIGNER_WIDGET_EXPORT WaveformDisplay : public QWidget
 {
 	Q_OBJECT
+	Q_PROPERTY(int sampleRate READ sampleRate WRITE setSampleRate)
+	Q_PROPERTY(int samplese READ samples WRITE setSamples)
 public:
 
 	explicit WaveformDisplay(QWidget *parent = nullptr);

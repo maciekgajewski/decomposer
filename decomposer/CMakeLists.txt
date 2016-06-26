@@ -14,7 +14,6 @@ target_link_libraries(decomposer
 	Qt5::Widgets
 	Qt5::Multimedia
 
-	essentia
-	fftw3 swresample avformat avcodec avutil yaml samplerate tag fftw3f
+	${ESSENTIA_Libraries}
 )
 

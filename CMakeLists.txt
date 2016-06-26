@@ -10,8 +10,12 @@ find_package(Qt5Multimedia 5.6 REQUIRED )
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+
+set(ESSENTIA_Libraries essentia fftw3 swresample avformat avcodec avutil yaml samplerate tag fftw3f)
+
 
 add_subdirectory(libs)
 add_subdirectory(tests)
